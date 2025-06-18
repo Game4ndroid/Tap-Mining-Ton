@@ -11,7 +11,7 @@ def webhook():
         chat_id = data["message"]["chat"]["id"]
         text = data["message"].get("text", "")
         reply = "Selamat datang di Tap Mining TON 🎯"
-        requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": reply})
+        requests.post(f"https://api.telegram.org/bot1898020009:AAF28cW1GjDOsWil5Zg_FFlMiqIuXYIWn6Y/sendMessage", json={"chat_id": chat_id, "text": reply})
     return {"ok": True}
 
 @app.route("/")
