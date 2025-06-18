@@ -1,22 +1,25 @@
 from flask import Flask, request
-import requests
+import telebot
+import os
 
+API_TOKEN = os.environ.get("BOT_TOKEN")  # Gunakan env var
+bot = telebot.TeleBot(API_TOKEN)
 app = Flask(__name__)
-TOKEN = '1898020009:AAF28cW1GjDOsWil5Zg_FFlMiqIuXYIWn6Y'
 
-@app.route(f"/1898020009:AAF28cW1GjDOsWil5Zg_FFlMiqIuXYIWn6Y", methods=["POST"])
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.reply_to(message, "Selamat datang di Ton Mining 🎯!")
+
+@app.route(f'/{API_TOKEN}', methods=['POST'])
 def webhook():
-    data = request.get_json()
-    if "message" in data:
-        chat_id = data["message"]["chat"]["id"]
-        text = data["message"].get("text", "")
-        reply = "Selamat datang di Tap Mining TON 🎯"
-        requests.post(f"https://api.telegram.org/bot1898020009:AAF28cW1GjDOsWil5Zg_FFlMiqIuXYIWn6Y/sendMessage", json={"chat_id": chat_id, "text": reply})
-    return {"ok": True}
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    return '', 200
 
-@app.route("/")
-def home():
-    return "Bot aktif!"
+@app.route('/')
+def index():
+    return "TON Mining Bot is running!"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    bot.remove_webhook()
+    bot.set_webhook(url=f"{os.environ.get('WEBHOOK_URL')}/{API_TOKEN}")
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
